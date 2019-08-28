@@ -5,11 +5,10 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-import pymongo
-from scrapy.conf import settings
+# import pymongo
 import json
 import codecs
-
+import datetime
 class MicrosoftacademicPipeline(object):
     # def __init__(self):
     #     # 链接数据库
@@ -31,14 +30,23 @@ class MicrosoftacademicPipeline(object):
     #         f.write(data_josn)
     #         f.write('\n')
 
-    def __init__(self):
-        self.file = codecs.open('spiderdata.json', 'a+', encoding="utf-8")
+    # def __init__(self):
+    #     self.date = datetime.datetime.today().strftime('%Y-%m-%d')
+    #     self.file = codecs.open(self.date + 'spiderdata600_700.json', 'a+', encoding="utf-8")
 
     def process_item(self, item, spider):
-        lines = json.dumps(dict(item), ensure_ascii=False) + "\n"
-        self.file.write(lines)
-        return item
+        # self.date = datetime.datetime.today().strftime('%Y-%m-%d')
+        date = datetime.datetime.today().strftime('%Y-%m-%d')
+        lines = json.dumps(dict(item), ensure_ascii=False)
+        # self.file = codecs.open(self.date + 'spiderdata600_700.json', 'a+', encoding="utf-8")
+        with open(date + 'spiderdata245_400.json', 'a+', encoding="utf-8") as f:
+            f.write(lines)
+            f.write('\n')
 
-    def spider_closed(self, spider):
-        self.file.close()
+        # lines = json.dumps(dict(item), ensure_ascii=False) + "\n"
+        # self.file.write(lines)
+        # return item
+
+    # def spider_closed(self, spider):
+    #     self.file.close()
 
