@@ -22,3 +22,5 @@ openKg: http://openkg.cn/dataset
 
 Penking: http://opendata.pku.edu.cn
 
+Zenodo: http://zenodo.org/
+
