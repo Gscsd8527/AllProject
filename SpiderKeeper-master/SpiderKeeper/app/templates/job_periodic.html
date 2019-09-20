@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block content_header %}
+<h1>Periodic jobs</h1>
+<ol style="float: right;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 12px;
+    padding: 7px 5px;
+    position: absolute;
+    top: 15px;
+    right: 10px;">
+    <button type="button" class="btn btn-success btn-flat" style="margin-top: -10px;" data-toggle="modal"
+            data-target="#job-run-modal">添加工作
+    </button>
+</ol>
+{% endblock %}
+{% block content_body %}
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">定时工作(蜘蛛)(Periodic jobs (Spiders))</h3>
+    </div>
+    <div class="box-body table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th style="width: 10px">#</th>
+                <th style="width: 30px">月(Month)</th>
+                <th style="width: 30px">天 月(Day of Month)</th>
+                <th style="width: 30px">天 周(Day of Week)</th>
+                <th style="width: 30px">小时(Hour)</th>
+                <th style="width: 30px">分钟(Minutes)</th>
+                <th style="width: 40px">蜘蛛(Spider)</th>
+                <th style="width: 40px">优先级(Priority)</th>
+                <th style="width: 100px">参数(Args)</th>
+                <th style="width: 40px">标签(Tags)</th>
+                <th style="width: 40px">激活(Enabled)</th>
+                <th style="width: 100px">启动(Action)</th>
+            </tr>
+            {% for job_instance in job_instance_list %}
+            <tr>
+                <td><a name="{{ job_instance.job_instance_id }}">{{ job_instance.job_instance_id }}</a></td>
+                <td>{{ job_instance.cron_month }}</td>
+                <td>{{ job_instance.cron_day_of_month }}</td>
+                <td>{{ job_instance.cron_day_of_week }}</td>
+                <td>{{ job_instance.cron_hour }}</td>
+                <td>{{ job_instance.cron_minutes }}</td>
+                <td>{{ job_instance.spider_name }}</td>
+                {% if job_instance.priority == -1 %}
+                <td>
+                    <span class="label label-default">LOW</span>
+                </td>
+                {% elif job_instance.priority == 0 %}
+                <td>
+                    <span class="label label-info">NORMAL</span>
+                </td>
+                {% elif job_instance.priority == 1 %}
+                <td>
+                    <span class="label label-warning">HIGH</span>
+                </td>
+                {% elif job_instance.priority == 2 %}
+                <td>
+                    <span class="label label-danger">HIGHEST</span>
+                </td>
+                {% endif %}
+                <td class="txt-args" data-toggle="tooltip" data-placement="right"
+                    title="{{ job_instance.spider_arguments }}">{{ job_instance.spider_arguments }}
+                </td>
+                <td>{{ job_instance.tags }}</td>
+                {% if job_instance.enabled %}
+                <td>
+                    <a href="/project/{{ project.id }}/job/{{ job_instance.job_instance_id }}/switch"><span
+                            class="label label-success">启动(Enabled)</span></a>
+                </td>
+                {% else %}
+                <td>
+                    <a href="/project/{{ project.id }}/job/{{ job_instance.job_instance_id }}/switch"><span
+                            class="label label-danger">停止(Disabled)</span></a>
+                </td>
+                {% endif %}
+                <td>
+                    <a href="/project/{{ project.id }}/job/{{ job_instance.job_instance_id }}/run"><span
+                            class="label label-info">运行(Run)</span></a>
+                    <a href="/project/{{ project.id }}/job/{{ job_instance.job_instance_id }}/remove"><span
+                            class="label label-danger">删除(Remove)</span></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" role="dialog" id="job-run-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="/project/{{ project.id }}/job/add" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">增加定时工作(Add Periodic Job)</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Spider</label>
+                                <select class="form-control" name="spider_name">
+                                    {% for spider in spider_list %}
+                                    <option value="{{ spider.spider_name }}">{{ spider.spider_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Priority</label>
+                                <select class="form-control" name="priority">
+                                    <option label="Low" value="-1">Low</option>
+                                    <option label="Normal" value="0" selected="selected">Normal</option>
+                                    <option label="High" value="1">High</option>
+                                    <option label="Highest" value="2">Highest</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Args</label>
+                                <input type="text" name="spider_arguments" class="form-control"
+                                       placeholder="foo=1,bar=2">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>选择月(Choose Month)</label>
+                                <select class="form-control" name="cron_month">
+                                    <option value="*" selected="selected">每一月(Every Month)</option>
+                                    {% for i in range(1,13) %}
+                                    <option value="{{ i }}">{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>(选择天和周)Choose Day of Week</label>
+                                <select class="form-control" name="cron_day_of_week">
+                                    <option value="*" selected="selected">每天(Every day)</option>
+                                    <option value="0">星期一(Monday)</option>
+                                    <option value="1">星期二(Tuesday)</option>
+                                    <option value="2">星期三(Wednesday)</option>
+                                    <option value="3">星期四(Thursday)</option>
+                                    <option value="4">星期五(Friday)</option>
+                                    <option value="5">星期六(Saturday)</option>
+                                    <option value="6">星期天(Sunday)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>选择某月某日(Choose Day of Month)</label>
+                                <select class="form-control" name="cron_day_of_month">
+                                    <option value="*" selected="selected">每天(Every day)</option>
+                                    {% for i in range(1,32) %}
+                                    <option value="{{ i }}">{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Choose Hour</label>
+                                <select class="form-control" name="cron_hour">
+                                    <option value="*" selected="selected">Every Hour</option>
+                                    {% for i in range(0,24) %}
+                                    <option value="{{ i }}">{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>选择分钟(Choose Minutes)</label>
+                                <select class="form-control" name="cron_minutes">
+                                    <option value="0" selected="selected">0</option>
+                                    {% for i in range(5,61,5) %}
+                                    <option value="{{ i }}">{{ i }}</option>
+                                    {% endfor %}
+                                    <option value="*">每分钟(Every minute)</option>
+                                    <option value="*/2">每2分钟(Every 2 minute)</option>
+                                    <option value="*/3">每3分钟(Every 3 minute)</option>
+                                    <option value="*/4">每4分钟(Every 4 minute)</option>
+                                    <option value="*/5">每5分钟(Every 5 minute)</option>
+                                    <option value="*/10">每10分钟(Every 10 minute)</option>
+                                    <option value="*/15">每15分钟(Every 15 minute)</option>
+                                    <option value="*/30">每30分钟(Every 30 minute)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <h4>高级选项(Advanced Options)</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>选择进程(Chose Daemon)</label>
+                                <select class="form-control" name="daemon">
+                                    <option value="auto">auto</option>
+                                    {% for server in servers %}
+                                    <option value="{{ server }}">{{ server }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Cron Expressions (m h dom mon dow)</label>
+                                <input type="text" name="cron_exp" class="form-control"
+                                       placeholder="0 * * * * ">
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="run_type" value="periodic">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+{% endblock %}
