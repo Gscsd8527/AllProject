@@ -24,3 +24,4 @@ Penking: http://opendata.pku.edu.cn
 
 Zenodo: http://zenodo.org/
 
+Scholarmate: https://www.scholarmate.com
