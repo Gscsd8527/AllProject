@@ -2,7 +2,8 @@ import requests
 import re
 import json
 import datetime
-from crawle_server import logger
+from config import logger
+
 Session = requests.session()
 
 
@@ -58,7 +59,7 @@ def getFirstData(token):
     items = data_json['result']['items']
     nums = data_json['result']['totalResults']
 
-    f = open('webSite/KaggleNums.json', 'r', encoding='utf-8')
+    f = open('webSite/Kaggle/KaggleNums.json', 'r', encoding='utf-8')
     data = f.read()
     data_list = data.split('\n')
     lastData = json.loads(data_list[-2])
@@ -73,7 +74,7 @@ def getFirstData(token):
         'nums': nums
     }
     data_json = json.dumps(nums_json, ensure_ascii=False)
-    with open('webSite/KaggleNums.json', 'a+', encoding='utf-8') as f:
+    with open('webSite/Kaggle/KaggleNums.json', 'a+', encoding='utf-8') as f:
         f.write(data_json)
         f.write('\n')
     return IsNumsUpdate, lastNums, nums
