@@ -25,3 +25,5 @@ class MicrosoftacademicItem(scrapy.Item):
     cited_jsondata = scrapy.Field()
     related_jsondata = scrapy.Field()
     references_jsondata = scrapy.Field()
+
+

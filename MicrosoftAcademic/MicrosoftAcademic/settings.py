@@ -36,7 +36,7 @@ CONCURRENT_REQUESTS = 16
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 2.5
+DOWNLOAD_DELAY = 0
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -62,8 +62,8 @@ COOKIES_ENABLED = False
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   'MicrosoftAcademic.middlewares.MicrosoftacademicDownloaderMiddleware': 543,
-   # 'MicrosoftAcademic.middlewares.UserAgentMiddleware': 300,
+   # 'MicrosoftAcademic.middlewares.MicrosoftacademicDownloaderMiddleware': 543,
+   'MicrosoftAcademic.middlewares.UserAgentMiddleware': 300,
    # 'MicrosoftAcademic.middlewares.ProxyMiddleware': 290,
 }
 
@@ -153,9 +153,3 @@ PROXIES = [
     '115.151.205.99:6888',
 ]
 
-MONGO_HOST = "127.0.0.1"  # 主机IP
-MONGO_PORT = 27017  # 端口号
-MONGO_DB = "Microsoft"  # 库名
-MONGO_COLL = "Microsoft_data_1"  # collection名
-# MONGO_USER = "root" #用户名
-# MONGO_PSW = "123456" #用户密码
