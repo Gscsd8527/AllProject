@@ -54,7 +54,7 @@ def scholarmateUpdate():
     resp_json = {
         'isUpdate': isUpdate,
         'IsNumsUpdate': IsNumsUpdate,
-        'webName': 'Harvard',
+        'webName': '科研之友',
         'newNum': nums
     }
     return resp_json

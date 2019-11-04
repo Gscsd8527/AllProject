@@ -1,7 +1,7 @@
 import requests
 import json
 from config import logger
-import datetime
+
 
 def getFirstData():
     nums = 0
@@ -24,25 +24,7 @@ def getFirstData():
             data_json = json.loads(text)
             total = data_json['hits']['total']
             nums += int(total)
-
-    f = open('webSite/Zenodo/ZenodoNums.json', 'r', encoding='utf-8')
-    data = f.read()
-    data_list = data.split('\n')
-    lastData = json.loads(data_list[-2])
-    lastNums = lastData['nums']
-    IsNumsUpdate = 0
-    if nums > lastNums:
-        IsNumsUpdate = 1
-        logger.info('[WebSite: Zenodo]: 网站数据量已更新')
-    nums_json = {
-        'time': str(datetime.datetime.now()),
-        'nums': nums
-    }
-    data_json = json.dumps(nums_json, ensure_ascii=False)
-    with open('webSite/Zenodo/ZenodoNums.json', 'a+', encoding='utf-8') as f:
-        f.write(data_json)
-        f.write('\n')
-    return IsNumsUpdate, lastNums, nums
+    return nums
 
 def WebSiteUpdate():
     """
@@ -50,23 +32,22 @@ def WebSiteUpdate():
     :return:
     """
     IsNumsUpdate = 0
-    lastNums, nums = 0, 0
+    nums = 0
     try:
-        IsNumsUpdate, lastNums, nums = getFirstData()
+        nums = getFirstData()
         isUpdate = 0
         logger.info('[WebSite: Zenodo] : 网站能正常抓取，并没有更新')
     except Exception as e:
         isUpdate = 1
         logger.error('[WebSite: Zenodo] : 发生错误， 错误原因为： {}'.format(e))
-    return isUpdate, IsNumsUpdate, lastNums, nums
+    return isUpdate, IsNumsUpdate, nums
 
 def ZenodoUpdate():
-    isUpdate, IsNumsUpdate, lastNums, nums = WebSiteUpdate()
+    isUpdate, IsNumsUpdate, nums = WebSiteUpdate()
     resp_json = {
         'isUpdate': isUpdate,
         'IsNumsUpdate': IsNumsUpdate,
         'webName': 'Zenodo',
-        'lastNum': lastNums,
         'newNum': nums
     }
     return resp_json

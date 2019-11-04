@@ -49,8 +49,8 @@ def SeedEmail(resp_list):
     发送邮件
     :return:
     """
-    receiver = ['tan_gscsd@163.com', 'luchangfa@cnic.cn', 'jianglulu@cnic.cn', 'cqlxst@126.com']  # 设置邮件接收人，可以是QQ邮箱
-    # receiver = ['3141917255@qq.com']  # 设置邮件接收人，可以是QQ邮箱
+    # receiver = ['tan_gscsd@163.com', 'luchangfa@cnic.cn', 'jianglulu@cnic.cn', 'cqlxst@126.com']  # 设置邮件接收人，可以是QQ邮箱
+    receiver = ['tan_gscsd@163.com']  # 设置邮件接收人，可以是QQ邮箱
     body = setHtml(resp_list)
     msg = MIMEText(body, 'html')  # 设置正文为符合邮件格式的HTML内容
     msg['subject'] = '检测网站是否更新'
@@ -84,7 +84,6 @@ def getKagge():
     resp_json['haveAccess'] = 17803
     if resp_json['newNum'] > 17803:
         resp_json['IsNumsUpdate'] = 1
-    # print('resp_json= ', resp_json)
     return resp_json
 
 
@@ -120,7 +119,7 @@ def getScholarmateUpdate():
     检测Scholarmate
     :return:
     """
-    logger.info('-------查询Scholarmate网站--------')
+    logger.info('-------查询 科研之友 网站--------')
     resp_json = scholarmateUpdate()
     resp_json['haveAccess'] = 533228
     if resp_json['newNum'] > 533228:
@@ -150,11 +149,10 @@ if __name__ == '__main__':
         today = (datetime.datetime.now() + datetime.timedelta(days=1)).weekday()
         hour = now.strftime('%H')
         logger.info('当前时间为： ' + str(now))
-        if hour == '10' and today == 1:
+        if hour == '09' and today == 1:
             main()
             logger.info('-------执行程序后休眠中-------')
             time.sleep(3600)
 
         logger.info('-------未到指定时间，休眠中-------')
         time.sleep(3600)
-
