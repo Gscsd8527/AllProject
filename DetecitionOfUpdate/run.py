@@ -7,7 +7,7 @@ from WebSite.Kaggle.kaggle import KaggleUpdate
 from WebSite.Zenodo.zenodo import ZenodoUpdate
 from WebSite.Harvard.harvard import HarvardUpdate
 from WebSite.ScholarMate.scholarmate import scholarmateUpdate
-
+from WebSite.Peking.peking import PekingUpdate
 
 
 def setHtml(resp_list):
@@ -49,8 +49,8 @@ def SeedEmail(resp_list):
     发送邮件
     :return:
     """
-    # receiver = ['tan_gscsd@163.com', 'luchangfa@cnic.cn', 'jianglulu@cnic.cn', 'cqlxst@126.com']  # 设置邮件接收人，可以是QQ邮箱
-    receiver = ['tan_gscsd@163.com']  # 设置邮件接收人，可以是QQ邮箱
+    receiver = ['tan_gscsd@163.com', 'luchangfa@cnic.cn', 'jianglulu@cnic.cn', 'cqlxst@126.com']  # 设置邮件接收人，可以是QQ邮箱
+    # receiver = ['tan_gscsd@163.com']  # 设置邮件接收人，可以是QQ邮箱
     body = setHtml(resp_list)
     msg = MIMEText(body, 'html')  # 设置正文为符合邮件格式的HTML内容
     msg['subject'] = '检测网站是否更新'
@@ -127,6 +127,19 @@ def getScholarmateUpdate():
     return resp_json
 
 
+def getPeking():
+    """
+    检测北大开放平台
+    :return:
+    """
+    logger.info('-------查询 北大开放平台 网站--------')
+    resp_json = PekingUpdate()
+    resp_json['haveAccess'] = 224
+    if resp_json['newNum'] > 224:
+        resp_json['IsNumsUpdate'] = 1
+    return resp_json
+
+
 
 def main():
     resp_list = []
@@ -138,6 +151,8 @@ def main():
     resp_list.append(resp_harvard)
     resp_scholarmate = getScholarmateUpdate()
     resp_list.append(resp_scholarmate)
+    resp_peking = getPeking()
+    resp_list.append(resp_peking)
     SeedEmail(resp_list)
 
 
@@ -153,6 +168,5 @@ if __name__ == '__main__':
             main()
             logger.info('-------执行程序后休眠中-------')
             time.sleep(3600)
-
         logger.info('-------未到指定时间，休眠中-------')
         time.sleep(3600)

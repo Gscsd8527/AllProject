@@ -19,7 +19,9 @@ def IsUpdate():
             pass
     else:
         isUpdate = 1
-    return isUpdate, int(num.strip())
+    if isinstance(num, str):
+        num = int(num.strip())
+    return isUpdate, num
 
 
 def WebSiteUpdate():
