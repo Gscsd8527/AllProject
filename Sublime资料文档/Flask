@@ -1,0 +1,711 @@
+Flask
+
+1. 为视图绑定多个url（这两个路径都能访问到）
+     @app.route('/h1')
+     @app.route('/')
+     def index():
+        return '<h1>Hello World!</h1>'
+
+
+2. 动态URL
+      @app.route('/greet/<name>')
+	  def greet(name):
+          return '<h1>Hello, %s</h1>' % name
+
+
+      指定参数类型
+       (1) int、float类型（给参数指定类型，就在参数前加上参数类型和冒号即可）
+		      @app.route('/greet/<int:id>')
+			  def greet(id):
+		          return '<h1>Hello, %s</h1>' % id
+	   (2) path类型（指定path类型，可以获取当前路径，值得注意的是获取的不是完整路径，只是此处传入的路径参数）
+              @app.route('/<path:url_path>')
+			  def h(url_path):
+    		      return 'path:%s' % url_path
+    		列：
+    	       输入链接为： http://127.0.0.1:5000/test， 页面返回path:test
+    	       输入链接为： http://127.0.0.1:5000/test/a， 页面返回path:test/a
+
+       （3）默认参数
+               @app.route('/gret', defaults={'name': 'Programmer'})
+			   @app.route('/gret/<name>')
+			   def gret(name):
+				   return '<h1>Hello, %s!</h1>' % name
+
+		（4）指定某些参数
+		       @app.route('/colors/<any(blue, white, red):color>')
+			   def three_colors(color):
+			   	  return '这是 %s' % color
+			   输入http://127.0.0.1:5000/colors/blue： 返回 这是 blue，否则404
+
+
+3. 更多启动选项（需要更改一些配置）
+     使服务器外部可见（服务器默认是对外不可见的，可以在run命令后添加--host选项将主机地址设为0.0.0.0使其对外可见）局域网可见
+     flask run --host=0.0.0.0
+ 
+4. url_for(根据函数名反向生成url，使用函数 url_for() 来针对一个特定的函数构建一个 URL。它能够接受函数名作为第一参数，
+      以及一些关键字参数， 每一个关键字参数对应于 URL)
+      	@app.route('/test')
+		def query_user():
+		    """
+		      http://127.0.0.1:5000/test?id=123
+		    :return:
+		    """
+		    id=request.args.get('id')
+		    return "query user:"+id
+
+		@app.route('/query_url')
+		def query_url():
+		    """
+		    反导向query_user函数名对应的url地址
+		    :return
+		    """
+		    return "query url:" + url_for("query_user")
+        访问： http://127.0.0.1:5000/query_url
+        得到： query url:/test
+        url_for参数内加入_external=True，即可得到绝对路径
+           url_for("query_user", _external=True)
+
+5. 在Flask中处理请求
+     1. 路由匹配
+         了便于将请求分发到对应的视图函数，程序实例中存储了一个路由表（app.url_map），其中定义了URL规则和视图函数的映射关系。
+     
+     2. 获取请求url中的查询字符串
+	     from flask import Flask, request
+		 app = Flask(__name__)
+		 @app.route('/hello')
+		 def hello():
+		 	name = request.args.get('name', 'Flask') # 获取查询参数name的值，设置默认参数
+			return '<h1>Hello, %s!<h1>' % name # 插入到返回值中
+    
+     3. 设置监听HTTP方法（限定请求的方法，超出方法返回405错误）
+         @app.route('/hello', methods=['GET', 'POST'])
+		 def hello():
+		 	return '<h1>Hello, Flask!</h1>'
+
+6. 请求钩子
+     需求： 了便于将请求分发到对应的视图函数，程序实例中存储了一个路由表（app.url_map），其中定义了URL规则和视图函数的映射关系。
+     功能： 可以用来注册在请求处理的不同阶段执行的处理函数（或称为回调函数，即Callback）。这些请求钩子使用装饰器实现，通过程序实        例app调用
+
+     before_first_request： 注册一个函数，在处理第一个请求前运行
+
+	 before_request：  注册一个函数，在处理每个请求前运行
+
+     after_request：  注册一个函数，如果没有异常抛出，会在处理每个请求结束后运行
+
+     teardown_request: 注册一个函数，即使有未处理的异常抛出，会在处理每个请求结束后运行，如果发生异常，
+                       会传入异常对象作为参数到注册的函数中
+
+     after_this_request: 在视图内注册一个函数，会在这个请求结束后运行
+
+     示列：
+         @app.before_request
+			def do_something():
+
+7. 重定向
+    from flask import redirect
+    @app.route('/red')
+    def red():
+    	return redirect('/h1')
+    访问http://127.0.0.1:5000/red， 回车 链接变成http://127.0.0.1:5000/h1
+
+    列：联合运用了url_for这个函数
+        @app.route('/rd1')
+		def rd1():
+		    return redirect(url_for('rd2')) # 重定向到/rd2
+		@app.route('/rd2')
+		def rd2():
+		    return ' hello '  
+		访问 http://127.0.0.1:5000/rd1 跳转到 http://127.0.0.1:5000/rd2
+
+8. 响应格式
+     flask默认HTML格式，不同的响应格式需要设置不同的MIME类型
+     使用MIME类型，可以通过Flask提供的make_response()方法生成响应对象，传入响应的主体作为参数，然后
+     使用响应对象的mimetype属性设置MIME类型
+
+     列：
+        from flask import make_response
+		@app.route('/foo')
+		def foo():
+			response = make_response('Hello, World!')
+			response.mimetype = 'text/plain'
+			return response
+		也可通过 response.headers['Content-Type']='text/xml；charset=utf-8' 设置
+		也可设置状态码： resp.status = "999 itcast"  # 状态码
+		可以加入自己的东西 
+		   resp.headers["City"] = "ShangHai"  # 通过字典的形式添加响应头（值设置为中文报错）
+    
+    设置响应格式为json
+        @app.route('/foo')
+		def foo():
+		    data = {
+		        'name': '飞扬',
+		        'gender': 'male'
+		    }
+		    response = make_response(json.dumps(data))
+		    response.mimetype = 'application/json'
+		    return response
+
+	 另一种设置响应json方法（查看了响应的文件，发现上下两种响应都相同）
+	 	from flask import jsonify
+	    @app.route('/fo')
+		def fo():
+		    data = {
+		        'name': '飞扬',
+		        'gender': 'male'
+		    }
+		    return jsonify(data)
+
+9. Cookie
+    Response类中常用属性和方法
+        方法/属性                            说明
+          headers                    一个werkzeug的Headers对象，表示响应首部，可以像字典一样操作
+          status                       状态码，文本类型
+          status_code                  状态码，整型
+          mimetype                     MIME类型（仅包括内容类型部分）
+          set_cookie()                 用来设置一个cookie
+    
+    列： 
+    @app.route('/set/<name>')
+	def set_cookie(name):
+	    response = make_response(redirect(url_for('hello')))
+	    response.set_cookie('name', name)
+	    return response
+	访问 http://127.0.0.1:5000/set/tzh， 自动跳转到 http://127.0.0.1:5000/hello
+	前面那个链接中response.headers中cookie那块是 Set-Cookie: name=tzh; Path=/
+	后面那个链接中request.headers中 Cookie: name=tzh
+
+	获取跳转过去的cookie中的值
+
+	@app.route('/hello')
+	def hello():
+	    name = request.cookies.get('name')
+	    return '<h1>Hello, World！%s <h1>' % name
+
+	@app.route('/set/<name>')
+	def set_cookie(name):
+	    response = make_response(redirect(url_for('hello')))
+	    response.set_cookie('name', name)
+	    return response
+
+
+10. Session（安全的Cookie）
+    首先得设置程序密钥
+    app.secret_key = 'secret string'
+
+    代码
+    	from flask import session
+        app.secret_key = 'secret string'
+
+		@app.route('/login')
+		def login():
+		    session['logged_in'] = True # 写入session
+		    for k, v in session.items():
+		        print(k, '= ', v)
+		    return redirect(url_for('hello'))
+
+
+		@app.route('/')
+		@app.route('/hello')
+		def hello():
+		    name = request.args.get('name')
+		    if name is None:
+		        name = request.cookies.get('name', 'Human')
+		        response = '<h1>Hello, %s!</h1>' % name
+		        # 根据用户认证状态返回不同的内容
+		        if 'logged_in' in session:
+		            response += '[Authenticated]'
+		        else:
+		            response += '[Not Authenticated]'
+		        return response
+    
+    登出用户
+        from flask import session
+		@app.route('/logout')
+		def logout():
+			if 'logged_in' in session:
+			session.pop('logged_in')
+			return redirect(url_for('hello'))
+
+11. 上下文全局变量
+    变量名          上下文类别         说明
+    current_app     程序上下文        指向当前请求的程序实列
+    g               程序上下文        替代python的全局变量用法，确保仅在当前请求中可用，用于存储全局数据，每次请求都会重设
+    request         程序上下文        封装客户端发出的请求报文数据                      
+    session         程序上下文        用于记住请求之间的数据，通过签名的cookie实现
+
+12. 重定向回上一个页面
+  	1.获取上一个页面的URL
+	    return redirect(request.referrer)
+	    增加备选（浏览器设置自动清除或修改了referrer字段。我们需要添加一个备选项）
+	    return redirect(request.referrer or url_for('hello'))
+
+	    用户在浏览器的地址栏直接访问时可以轻易地修改查询参数，为了避免next参数为空的情况，我们也要添加备选项，如果为空就重定向到hello视图
+	    return redirect(request.args.get('next', url_for('hello')))
+
+	2. 对URL进行安全验证
+	
+	    验证next变量值是否属于程序内部URL
+
+	    from urlparse import urlparse, urljoin # Python3需要从urllib.parse导入
+		from flask import request
+		def is_safe_url(target):
+			ref_url = urlparse(request.host_url)
+			test_url = urlparse(urljoin(request.host_url, target))
+			return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+
+
+13. 模板
+    模板中url跳转
+    <p><a href="{{ url_for('login') }}">登陆</a></p>
+
+    模板中使用静态文件
+       <link rel="stylesheet" href="{{ url_for('static'),filename="css/index.css" }}">登陆</a></p>
+
+    模板中传递参数：
+          单个参数： render_template('index.html', name='tzh', age=18)
+          不直接写在render_template中：
+             context = {name='tzh', age=18}
+             render_template('index.html', **context)
+
+    模板中，使用一个变量，语法是{{params}}
+
+    访问模型中的属性或者是字典， 可以通过{{params.property}}的形式，或者使用{{params[property]}}
+
+    过滤器
+       default(指定默认值)：
+           {{ avatar|default('xxx') }}
+
+       length(求长度)
+           {{ comments|length }}
+
+
+14. 使用配置文件
+    1. 新建一个config.py文件
+    2. 在主APP中导入这个文件，并配置到APP中，实列如下
+        import config
+		app = Flask(__name__)
+		app.config.from_object(config)
+    3. 还有许多其他参数，都是放在这个配置文件中， 比如‘SECRET_KEY’和 ‘SQLALCHEMY’，这些配置都是放在这个文件中
+
+15. Flask-SQLAlchemy
+     安装 pip install flask-sqlalchemy
+
+     a.测试是否连接：
+        config配置文件中
+            SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/flask1?charset=utf8'
+		    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+		主APP中
+		    app = Flask(__name__)
+		    from flask_sqlalchemy import SQLAlchemy
+		    app.config.from_object(config)
+			db = SQLAlchemy(app)
+			db.create_all()  # 能测试连接
+	    
+	    这样的话还是会报错，解决方案（只改这个地方即可）
+	        config 文件中
+	           先安装 pip install mysql-connector-python
+               import mysql.connector
+               SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:123456@localhost:3306/flask1?charset=utf8'
+   
+     
+     b.使用（加入以下代码，运行程序即可创建表结构）需要调用 db.create_all()
+        import config
+		app = Flask(__name__)
+		app.config.from_object(config)
+		db = SQLAlchemy(app)
+
+		class Article(db.Model):
+		    __tablename__ = 'article'
+		    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+		    title = db.Column(db.String(100), nullable=False)
+		    content = db.Column(db.Text, nullable=False)
+
+		db.create_all()
+      
+      c. 数据的增删改查
+         增加：
+            @app.route('/')
+			def hello_world():
+			    article1 = Article(title='aaa', content='bbb')
+			    db.session.add(article1)
+			    db.session.commit()
+			    return 'hello world'
+
+	     查：
+		    result = Article.query.filter(Article.title == 'aaa').all()  # queryall对象
+		    article1 = result[0]
+		    print(article1.title)
+		    print(article1.content)
+
+		# 删除
+		    article1 = Article.query.filter(Article.content=='bbb').first()
+		    print(type(article1))
+		    db.session.delete(article1)
+		    db.session.commit()
+
+	   d. 多对多
+	      1. 多对多的关系，要通过一个中间表进行关联
+	      2. 中间表，不能通过class的方式实现，只能通过db.Table实现
+	      3. 设置关联：
+	         tags = db.relationship('Tag', secondary=article_tag, backref=db.backref('articles'))
+	         需要使用一个关键字参数‘secondary=中间表’来进行关联
+	      4. 访问和数据添加可以通过以下方式进行操作
+	           '''
+	              article_tag = db.Table(
+					    'article_tag',
+					    db.Column('article_id', db.Integer, db.ForeignKey('article.id'), primary_key=True),
+					    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+					)
+
+					class Article(db.Model):
+					    __tablename__ = 'article'
+					    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+					    title = db.Column(db.String(100), nullable=False)
+					    tags = db.relationship('Tag', secondary=article_tag, backref=db.backref('articles'))
+
+					class Tag(db.Model):
+					    __tablename__ = 'tag'
+					    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+					    name = db.Column(db.String(100), nullable=False)
+
+					db.create_all()
+
+					@app.route('/')
+					def hello_world():
+					    # 增
+					    # article1 = Article(title='aaa', content='bbb')
+					    # db.session.add(article1)
+					    # db.session.commit()
+
+					    # 查
+					    # result = Article.query.filter(Article.title == 'aaa').all()
+					    # article1 = result[0]
+					    # print(article1.title)
+					    # print(article1.content)
+
+					    # 删除
+					    # article1 = Article.query.filter(Article.content=='bbb').first()
+					    # print(type(article1))
+					    # db.session.delete(article1)
+					    # db.session.commit()
+					    # return 'hello world'
+
+					    article1 = Article(title='aaa')
+					    article2 = Article(title='bbb')
+
+					    tag1 = Tag(name='111')
+					    tag2 = Tag(name='222')
+
+					    article1.tags.append(tag1)
+					    article1.tags.append(tag2)
+
+					    article2.tags.append(tag1)
+					    article2.tags.append(tag2)
+
+					    db.session.add(article1)
+					    db.session.add(article2)
+
+					    db.session.add(tag1)
+					    db.session.add(tag2)
+
+					    db.session.commit()
+					    return 'aa'
+	           '''
+	           访问数据
+	               """
+	                  article1 = Article.query.filter(Article.title == 'aaa').first()
+	                  tags = article1.tags
+	                  for tag in tags:
+	                     print(tag.name)
+
+	               """
+
+16. Flask-Script的介绍与安装
+    Flask-Scrapy的作用是可以通过命令行的形式来操作Flask，列如通过命令跑一个开发版本的服务器、谁知数据库、定时任务等
+    1. 使用
+      新建一个manager.py文件
+        from  flask_script import Manager
+		from run import app
+
+		manage = Manager(app)
+
+		@manage.command
+		def runserver():
+		    print('服务器跑起来了')
+
+		if __name__ == '__main__':
+		    manage.run()
+      执行命令 python manager.py runserver， 就会看到打印了一行  服务器跑起来了
+
+17.将数据库的东西都放一块
+     1. 新建一个db_scripts.py文件
+        from flask_script import Manager
+		DBmanager = Manager()
+
+		@DBmanager.command
+		def init():
+		    print('数据库初始化完成')
+
+		@DBmanager.command
+		def migrate():
+		    print('数据库迁移完成')
+
+	 2. manager.py文件中：
+	    from  flask_script import Manager
+		from run import app
+		from db_scripts import DBmanager
+
+		manage = Manager(app)
+
+		@manage.command
+		def runserver():
+		    print('服务器跑起来了')
+
+		manage.add_command('db', DBmanager)
+
+		if __name__ == '__main__':
+		    manage.run()
+
+    然后执行 python manager.py db init就会看到打印了一句 数据库初始化完成
+    manage.add_command('db', DBmanager) 这句是引入DBmanager, 通过 db 这个命令来引入，然后 init就相当于引入了这个函数
+
+
+18. 分开model及解决循环引用
+     分开model的目的： 为了让代码更加方便管理
+     如何解决循环引用： 把db放在一个单独的文件中，切断单独引用的线条
+     1. 新建一个models.py 来管理所有的模型
+        from run import db
+
+		class Article(db.Model):
+		    __tablename__ = 'article'
+		    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+		    title = db.Column(db.String(100), nullable=False)
+
+     2. 防止互相引用，新建一个exts.py文件来放db
+            from flask_sqlalchemy import SQLAlchemy
+			db = SQLAlchemy()
+
+     
+     3. run.py配置如下
+            from flask import Flask
+			from exts import db
+			import config
+
+			app = Flask(__name__)
+			app.config.from_object(config)
+			db.init_app(app)  # 绑定apo
+
+
+			@app.route('/')
+			def hello_world():
+			    return 'Hello World!'
+
+			if __name__ == '__main__':
+			    app.run(debug=True)
+
+19. Flask-Migrate
+   1. 介绍：因为采用 ‘db.create_all’在后期修改字段的时候，不会自动的映射到数据库中，必须删除表，然后重新运行db.create_all
+           才会从新映射，这样不符合我们的需求，因此flask-migrate就是为了解决这个问题，它可以在每次修改模型后，可以将修改的东西映射到数据库中
+   2. 使用 flask-migrate 必须借助 flask flask_scripts,这个包的MigrateCommand中包含了所有和数据库相关的命令
+
+   3. flask_migrate相关的命令：
+       python manager.py db init ： 初始化一个迁移脚本的环境，只需要执行一次
+       python manager.py db migrate: 将模型生成迁移文件，只要模型更改了，就需要执行一遍这个命令
+       python manager.py db upgrade: 将模型文件真正映射到数据库中，每次运行了migrate命令后，就需要运行这个命令才能使更改的结构在数据库中显示
+      注意点：需要将你想要映射到数据库中的模型，都要导入到manage.py文件中，如果没有导入进去，就不会映射到数据库中
+
+    run.py
+        from flask import Flask
+		from exts import db
+		from models import Article
+		import config
+
+		app = Flask(__name__)
+		app.config.from_object(config)
+		db.init_app(app)
+
+		# 将我们的APP推送到栈顶上去，不然程序无法读取到APP的表,使用了migrate之后这个可以不用
+		# with app.app_context():
+		#     db.create_all()
+
+		@app.route('/')
+		def hello_world():
+		    return 'Hello World!'
+
+		if __name__ == '__main__':
+		    app.run(debug=True)
+    
+    manage.py
+        from  flask_script import Manager
+		from run import app
+		from flask_migrate import Migrate, MigrateCommand
+		from run import db
+		manager = Manager(app)
+		# 1. 要使用flask_migrate，必须绑定APP和db
+		migrate = Migrate(app, db)
+		# 2. 把MigrateCommand命令添加到manager中
+		manager.add_command('db', MigrateCommand)
+
+		if __name__ == '__main__':
+		    manager.run()
+
+ 
+20. Cookie 和 Session
+   Cookie：
+	   1. cookie 出现的原因： 在网站中， http请求是无状态的，也就是说即使第一次和服务器连接后并且登录成功后，第二次请求服务器依然不能知道当前请求的是哪个用户，cookie的出现就是为了解决这个问题。第一次登录后服务器返回一些数据(cookie)给浏览器，然后浏览器保存在本地，当该用户发送第二次请求的时候，就会自动的把上次请求存储的cookie数据自动携带给服务器，服务器用过浏览器携带的数据就能判断当前用户是哪个。
+
+	   2. 如果服务器返回了cookie给浏览器，那么浏览器下次再请求相同的服务器的时候，就会自动把cookie发送给浏览器，这个过程，用户根本不需要管
+
+	   3. cookie是保存在浏览器中的，相对的是浏览器。
+   
+    Session
+       1. session介绍： session和cookie的作用有点类似，都是为了存储用户相关的信息，不同的是，cookie是存储在本地浏览器，而session存储在服务器。存储在服务器的数据会更加安全，不容易被窃取，但存储在服务器也有一定的弊端，就是会占用服务器的资源，但现在服务器发展至今，一些session信息还是绰绰有余的
+
+       2. session的好处
+          数据不是直接发送给浏览器，而是发送回一个session_id，服务器将session_id和敏感数据做一个映射存储在session(在服务器上面）中，更加安全。
+
+          session可以设置过期时间，也从另外一方面保证了用户的账户安全。
+
+21. flask中的session工作机制
+    1. flask中session机制： 把敏感数据通过加密后放入 session中，然后再把session存放到cookie中，下次请求的时候，再从浏览器发送过来的cookie中读取session，然后再从session中读取敏感数据，并进行解密，获取最终的用户数据。
+    2. flask的这种 session 机制， 可以节省服务器的开销，因为把所有的消息都存储到了客户端(浏览器).
+    3. 安全是相对的， 把session放到cooker中， 经过了加密，也是比较安全的
+
+
+22.操作session
+    1. session的操作方式
+        1. 使用session需要从flask中导入session，以后所有和session相关的操作都是从这个变量来的
+        2. 使用session需要设置SECERT_KEY，用来作为加密用的，并且这个SECERT_KEY如果每次启动服务器后都是变化的话，那么之前的session就不能通过当前这个SECERT_KEY进行解密了
+        3. 操作session的时候，跟操作字典是一样的
+        4. 添加session： session['username'] = 'xiaoming'
+        5. 删除session：
+             1. session.pop('username') 或者 del session['username']
+             2. session.clear()
+
+        from flask import Flask, session
+		import os
+		app = Flask(__name__)
+		# 24位字符
+		app.config['SECRET_KEY'] = os.urandom(24)
+
+		@app.route('/')
+		def hello_world():
+		    # 如果没有指定session的过期时间，那么默认是浏览器关闭后就自动结束
+		    session['username'] = 'xiaoming'
+		    return 'Hello World!'
+
+		@app.route('/get')
+		def get():
+		    return session['username']
+
+		@app.route('/delete/')
+		def delete():
+		    print(session['username'])
+		    session.pop('username')
+		    print(session.get('username'))
+		    return 'sucess'
+
+		@app.route('/clear/')
+		def clear():
+		    print(session['username'])
+		    # 把session中的所有数据
+		    session.clear()
+		    print(session.get('username'))
+		    return 'sucess'
+
+		if __name__ == '__main__':
+		    app.run(debug=True)
+
+    2. 设置session的过期时间
+         1. 如果没有指定session的过期时间，那么默认是浏览器关闭后就自动结束
+         2. 如果设置了session的permanent为True,那么过期时间是31天
+         3. 可以通过给app设置PERMANENT_SESSION_LIFETIME来更改过期时间，这个值是datetime.timedelay类型
+		        from datetime import timedelta
+				app = Flask(__name__)
+				# 24位字符
+				app.config['SECRET_KEY'] = os.urandom(24)
+				# 设置七天过期时间
+				app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+		        @app.route('/')
+				def hello_world():
+				    # 如果没有指定session的过期时间，那么默认是浏览器关闭后就自动结束
+				    session['username'] = 'xiaoming'
+				    #如果session设置了permanent属性为true,那么过期时间是31天
+				    session.permanent = True
+				    return 'Hello World!'
+		 
+23. get请求和post请求
+    1. get请求
+	     使用场景： 如果只是对服务器获取数据，并没有对服务器产生任何影响，那么这时候使用get请求
+	     传参： get请求传参是放在url中，并且是通过“？”的形式来指定key和value的
+    2. post请求
+          使用场景： 如果要对服务器产生影响，那么使用post请求。
+          传参： post请求传参不是放在url中，而是通过form data的形式发送给服务器的。
+          
+
+24. get和post请求获取参数
+    1. get请求是通过 flask.request.args来获取的
+    2. post参数是通过flask.request.form来获取的
+    3. post请求在模板中要注意几点
+          1. input标签中，要写name来标识这个value的key，方便后台获取
+          2. 在写form表单的时候，要指定method="post"，并且要指定action=‘/login/‘
+
+25 保存全局变量的g属性
+   1. global
+   2. g对象时专门用来保存用户的数据的
+   3. g对象在一次请求中的所有的代码的地方，都是可以使用的（第二次请求g对象就会消失，只能存活在当前这个视图中）
+   使用：
+      from flask import Flask, request, render_template, g
+      g.username = 'alazhijia'
+
+26. 钩子函数
+   1. before_request:
+	   1. 在请求之前执行的
+	   2. 是在视图函数执行之前执行的
+	   3. 这个函数只是一个装饰器，他可以把需要设置为钩子函数的代码放到视图函数执行之前来执行
+     列：
+       @app.before_request
+	   def my_before_request():
+	       print('在请求之前执行的')
+   2. context_processor:（一般用来传递登录的用户名密码）
+       1. 上下文处理器应该返回一个字典，字典中的key会被模板当做变量来渲染
+       2. 上下文处理器中返回的字典，在所有页面中都是可用的
+       3. 被这个装饰器修饰的钩子函数，必须要返回一个字典，即使为空也要返回
+     列：
+        @app.context_processor
+		def my_context_processor():
+		    username = session.get('username')
+		    if username:
+		        return {'username':username}
+
+
+
+27. 装饰器
+    1. 装饰器使用是通过@符号，放在函数的上面
+    2. 装饰器中定义的函数， 要使用*args,**kwargs组合，并且在这个函数中执行原始函数的时候，也要把*args,**kwargs传进去
+    3. 需要使用functools,wraps在装饰器中的函数上把传进来的这个函数进行一个包裹，这样就不会丢失原来的函数的__name__的属性
+    
+    列：
+    from functools import wraps
+	from flask import session,redirect,url_for
+
+	# 登录限制的装饰器
+	def login_required(func):
+	    @wraps(func) # 不写这个的话，加了这个装饰器的函数的mytest.__name__会被改成wrapper,这样的话很危险
+	    def wrapper(*args,**kwargs):
+	        if session.get('user_id'):
+	            return func(*args,**kwargs)
+	        else:
+	            return redirect(url_for('login'))
+	    return wrapper
+	    
+    @login_required
+    mytest()
+
+
+
+
+
+

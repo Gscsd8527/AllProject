@@ -1,0 +1,367 @@
+Django
+
+1. 将Django中多个APP放入到一个apps目录中
+    配置：
+        setting：
+            sys.path.insert(0, os.path.join(BASE_DIR, 'apps')) # 将apps目录加入到搜索路径
+
+    这样setting中INSTALLED_APPS就可以和之前一样写app了，而不是写apps.app
+
+
+2. 富文本编辑器
+   1. INSTALLED_APPS 中加入 tinymce
+   2. setting配置：
+           # 富文本编辑器
+			TINYMCE_DEFAULT_CONFIG = {
+			    'theme': 'advanced',
+			    'width': 600,
+			    'height': 400,
+			}
+   3. 根url中加入：放admin下方
+       path('tinymce/', include('tinymce.urls')), # 富文本编辑器
+
+   4. model中：
+        from tinymce.models import HTMLField
+
+        # 富文本类型：带有格式的文本
+    	detail = HTMLField(blank=True, verbose_name='商品详情')
+
+
+3. 类视图（基于函数视图的类视图）
+   优点： 能更好的区分请求进来的方法
+   from django.views.generic import View
+
+   class Register(View):
+    def get(self, request):
+        return render(request, 'register.html')
+    def post(self, request):
+        return render(request, 'register.html')
+   如果做前后端分离的话，那么return这改成
+        return HttpResponse(json_data, content_type="application/json")
+  返回文件是json格式的话， 后面加content_type="application/json"
+  
+   将一个model中的模型中的数据返回的话，这样操作
+  from django.forms.models improt model_to_dict
+  for good in goods:
+      json_dict = model_to_dict(good)]
+      json_list.append(json_dict)
+      return HttpResponse(json.dumps(json_data), content_type="application/json")
+  也可以, 这种方法更加简单
+     from django.core improt serializers
+     json_data = serializers.serialize("json", goods)
+     json_data = json.loads(json_data)
+     return HttpResponse(json.dumps(json_data), content_type="application/json")
+
+  如果不想写content_type 和 json序列化的话
+  可以这样：
+    from django.http import JsonResponse
+    return JsonResponse(字典类型,safe=False)
+
+
+4. 使用自定义的系统模型类
+    1. model配置：
+       新增我们需要的字段：
+         create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    		 update_time = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    		 is_delete = models.BooleanField(default=False, verbose_name='删除标记')
+    2. setting配置
+	    # 使用原因：我们在使用createsuperuser的时候，里面的账户默认会在auth_user这个表里面
+		#           而使用了下面这个模型，使用命令创建的账户则会加到user下面的对应的User表中
+		AUTH_USER_MODEL = 'user.User'
+
+	3. 	user这个表的字段，新增了我们创建的三个，其他的默认
+	    idint(11) NOT NULL
+		password varchar(128) NOT NULL
+		last_login datetime(6) NULL
+		is_superuser tinyint(1) NOT NULL
+		username varchar(150) NOT NULL
+		first_name varchar(30) NOT NULL
+		last_name varchar(150) NOT NULL
+		email varchar(254) NOT NULL
+		is_staff tinyint(1) NOT NULL
+		is_active tinyint(1) NOT NULL
+		date_joined datetime(6) NOT NULL
+		create_time datetime(6) NOT NULL
+		update_time datetime(6) NOT NULL
+		is_delete tinyint(1) NOT NULL
+
+5. 使用默认的认证
+    user = User.objects.create_user(username, email, password)
+    user.is_active = 0
+    user.save
+
+6. 发送邮件
+   setting配置
+        # 发送邮件配置
+		EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+		# EMAIL_USE_TLS = False   # 是否使用TLS安全传输协议(用于在两个通信应用程序之间提供保密性和数据完整性。)
+		# EMAIL_USE_SSL = True    # 是否使用SSL加密，qq企业邮箱要求使用
+		EMAIL_HOST = 'smtp.163.com'   # 发送邮件的邮箱的SMTP服务器，这里用了163邮箱
+		EMAIL_PORT = 25     # 发件箱的SMTP服务器端口
+		EMAIL_HOST_USER = 'tan_gscsd@163.com'    # 发送邮件的邮箱地址
+		EMAIL_HOST_PASSWORD = 'gscsd123456'   # 发送邮件的邮箱密码(这里使用的是授权码)
+		EMAIL_PROM = '天天生鲜<tan_gscsd@163.com>'  # 收件人看到的发件人 
+	views 中设置
+	    from django.core.mail import send_mail
+        from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+		from itsdangerous import SignatureExpired
+
+	    # 这部分使用celery来发送邮件
+        # 发送激活链接：http://127.0.0.1:8000/user/active/id
+        # 激活链接中需要包含用户的身份信息，并且要把身份形象加密
+
+        # # 加密用户的身份信息，生成激活TOKEN
+        serializer = Serializer(settings.SECRET_KEY, 3600)
+        info = {'confirm': user.id}
+        token = serializer.dumps(info)
+        #
+        # # 发邮件
+        subject = '天天生鲜欢迎信息'
+        token = str(token, 'utf-8')
+        message = '<h1> {} 欢迎您成为天天生鲜注册会员</h1> 请点击下面链接激活您的账户<br/>' \
+                   '<a href="http://127.0.0.1:8000/user/active/{}">' \
+                   'http://127.0.0.1:8000/user/active/{}' \
+                   '</a>'.format(username, token, token)
+        sender = settings.EMAIL_PROM  # 指定发件人
+        receiver = [email] # 收件人列表
+        html_message = message
+        message = ''
+        send_mail(subject, message, sender, receiver, html_message=html_message)
+
+ 
+
+7. celery发送邮件
+    任务的发出者，中间人，任务的处理者可以在同一台电脑上启动，也可以在不同的电脑上
+
+    在manage.py同级目录下创建文件夹celery_tasks
+    在该文件夹下创建tasks.py文件
+    tasks.py
+	    # 使用celery
+		from django.core.mail import send_mail
+		from celery import Celery
+		from django.conf import settings
+
+
+        # Django环境的初始化，使task任务初始化
+		# 在任务处理者一段加这几句
+		import os
+		import django
+		os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dailyfresh.settings')  # 这句是wsgi中
+		django.setup()
+
+
+
+		# 创建一个Celery类的实列对象
+		app = Celery('celery_tasks.tasks', borker='redis://127.0.0.1:6379/2')
+
+
+		# 定义任务函数
+		@app.task  # 加上装饰器装饰，给函数加上一些信息
+		def send_register_active_email(to_email, username, token):
+		    '''发送激活邮件'''
+		    # 组织邮件信息
+		    subject = '天天生鲜欢迎信息'
+		    message = '<h1> {} 欢迎您成为天天生鲜注册会员</h1> 请点击下面链接激活您的账户<br/>' \
+		              '<a href="http://127.0.0.1:8000/user/active/{}">' \
+		              'http://127.0.0.1:8000/user/active/{}' \
+		              '</a>'.format(username, token, token)
+		    sender = settings.EMAIL_PROM  # 指定发件人
+		    receiver = [to_email]  # 收件人列表
+		    html_message = message
+		    # send_mail(subject, message, sender, receiver) #message转义不了
+		    message = ''
+		    send_mail(subject, message, sender, receiver, html_message=html_message)
+
+    view.py
+        from celery_tasks.tasks import send_register_active_email
+        serializer = Serializer(settings.SECRET_KEY, 3600)
+        info = {'confirm': user.id}
+        token = serializer.dumps(info)
+        token = str(token, 'utf-8')
+        send_register_active_email(email, username, token)
+        return HttpResponse('hello')
+    
+
+    需要启动 任务处理者 
+                  任务目录         启动worker   输出info信息 
+        celery -A celery_tasks.tasks worker -l info
+
+
+8. 登录校验
+   from django.contrib.auth import authenticate, login
+    # 业务处理： 登录校验
+    user = authenticate(username=username, password=password)
+    if user is not None:
+       # 用户名密码正确
+       if user.is_active:
+       # 用户已激活
+       	  # 认证用户后，附加到当前的会话中，可以通过login()函数完成，将用户的ID保存在session里面
+          login(request, user)  
+          pass
+       else:
+          pass
+
+    else:
+       # 用户名或密码错误
+
+9. 设置缓存
+   setting：
+      # django的缓存配置, 使用redis，存储用户的session
+		CACHES = {
+		    "default": {
+		        "BACKEND": "django_redis.cache.RedisCache",
+		        "LOCATION": "redis://127.0.0.1:6379/3",
+		        "OPTIONS": {
+		            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+		        }
+		    }
+		}
+
+		# 配置session存储
+		SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+		SESSION_CACHE_ALIAS = "default"
+
+10. 记住用户名
+    views:
+       get方法中
+            if 'username' in request.COOKIES:
+	            username = request.COOKIES.get('username')
+	            checked = 'checked'
+	        else:
+	            username = ''
+	            checked = ''
+	        # 使用模板
+	        return render(request, 'login.html', {'username': username, 'checked': checked})
+
+	   post方法中
+	        # 记住用户名时需要这个
+            response = redirect(reverse('goods:index'))
+            # 判断是否需要记住用户名
+            remember = request.POST.get('remember')
+            if remember == 'on':
+                # 记住用户名
+                response.set_cookie('username', username, max_age=24*3600)
+            else:
+                # 下次不需要记住
+                response.delete_cookie('username')
+            return response
+
+    HTML中
+        将value的值写进去
+       	<input type="text" name="username" class="name_input" value="{{ username }}"  placeholder="请输入用户名">
+        
+        选择是否记住用户名
+       	<input type="checkbox" name="remember" {{ checked }}>
+							<label>记住用户名</label>
+
+
+11. 用户登录欢迎信息
+    最原始的方法：request.user.is_authenticated()
+    除了给模板文件传递模板变量之外，Django框架会把request.user也传给模板文件，也就是说可以直接在模板中使用user
+    那么模板中判断有没有登录可以直接这样写：
+        {% if user.is_authenticated() %}
+        如果条件真确，那么就说明已经登录
+
+12. 用户登出
+    from django.contrib.auth import logout
+    # 清除用户的session信息
+    logout(request)
+
+
+13. 使用xadmin
+     1. xadmin下载
+        https://github.com/sshwsfc/xadmin/tree/django2
+        可以下载zip文件
+     2. 本地安装
+        pip install zip文件
+
+     3. 在项目目录下(manage.py同级目录下)创建extra_apps文件夹，我们将之前下的zip文件解压，里面有个xadmin文件夹，将这个文件夹拷贝到extra_apps目录下
+     在pycharm中，将鼠标放在xadmin文件上，鼠标右键，选择Mark Directory as  的  Sources Root
+     将目录标记为 根源
+
+     4. setting中配置
+        # 将新建的目录加入到path中
+        import sys
+        sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
+        
+
+        # INSTALLED_APPS中加入这两个APP
+          'xadmin',
+          'crispy_forms',
+     
+     5. 项目的urls中
+        import xadmin
+        urlpatterns = [
+            path(r'', xadmin.site.urls),
+        ]
+
+     6. admin.py
+        from myxadmin.models import User
+        import xadmin
+        class UserAdmin():
+            list_display = ['id', 'name', 'sex', 'age', 'addr', 'on_delete']
+            list_filter = ['name']
+            search_fields = ['name']
+        xadmin.site.register(User, UserAdmin)
+
+
+14. REST ful
+    1. serializers的配置
+        from rest_framework import serializers
+        from .models import User
+        class UserSerializers(serializers.ModelSerializer):
+            class Meta:
+                model = User
+                # fields = ('name', 'sex', 'age', 'addr')
+                fields = '__all__'
+
+            # 重写create方法，在视图中接收前端传过来参数并创建保存
+            def create(self, validated_data):
+                return User.objects.create(**validated_data)
+
+    2. serializers嵌套
+        from rest_framework import serializers
+        from .models import User，goods
+        class GoodsSerializers(serializers.ModelSerializer):
+            class Meta:
+                model = goods
+                # fields = ('name', 'sex', 'age', 'addr')
+                fields = '__all__'
+        class UserSerializers(serializers.ModelSerializer):
+            # 使用GoodsSerializers来覆盖good，good一般是外键这个字段
+            good = GoodsSerializers()
+            class Meta:
+                model = User
+                # fields = ('name', 'sex', 'age', 'addr')
+                fields = '__all__'
+
+    3. 分页
+      views
+       class UserPageView(PageNumberPagination):
+          page_size = 5
+          page_size_query_param = 'page_size'
+          page_query_param = "p"
+          max_page_size = 100
+
+       class UserListView(generics.ListAPIView):
+          queryset = User.objects.all()
+          serializer_class = UserSerializers
+          pagination_class = UserPageView
+
+      urls
+         path('list/', views.UserListView.as_view()),
+
+
+    4. GenericViewSet、GenericAPIView、APIView、View之间的关系
+          GenericViewSet（viewset）   -drf
+            GenericAPIView           -drf
+               APIView               -drf
+                 View                -django
+
+        之间的差异关键是  mixins, 不继承minxins的话，无法将get 和 post 关联起来
+          mixins
+               CreateModelMixin
+               ListModelMinxin
+               UpdateModelMixin
+               RetrieveModelMinxin
+               DestroyModelMinxin（连接delete方法的）

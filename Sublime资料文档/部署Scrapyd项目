@@ -1,0 +1,99 @@
+部署Scrapyd项目
+
+1. 在爬虫项目的目录下(创建爬虫项目时使用的名称) 执行 scrapyd  命令，确认本地可以访问  http://localhost:6800/  链接
+
+2. 安装scrapyd-client
+      这个包专门用来打包scrapy爬虫项目到scrapyd服务器中，安装成功的话，scripts中会出现scrapyd-deploy无后缀文件
+      这个scrapyd-deploy无后缀文件是启动文件Linux系统下可以运行, 在windows下是不能运行的,所以我们需要编辑一下使其在windows可以运行
+      1. 在该文件目录下新建一个scrapyd-deploy.bat文件，右键编辑，输入以下配置
+         @echo off
+        "D:\software\anaconda\python.exe"  "D:\software\anaconda\Scripts\scrapyd-deploy"  %1 %2 %3 %4 %5 %6 %7 %8 %9
+           
+           第一个路径是虚拟环境的路径，第二个是scrapyd-deploy路径，两个路径必须以空格隔开，后面的%xxx必须带上。
+
+3.进入到带有scrapy.cfg文件的目录(即项目的目录)
+      执行 scrapyd-deploy， 测试scrapyd-deploy是否可以运行
+          出现 Unknown target: default 则正常
+
+
+4. 编辑需要部署的scrapy.cfg文件(需要将哪一个爬虫部署到scrapyd中，就配置该项目的该文件)
+    [deploy:部署名(部署名可以自行定义)]
+	url = http://127.0.0.1:6800/
+	project = 项目名(创建爬虫项目时使用的名称)
+
+5. 执行 scrapyd-deploy -l 启动服务，就可以看到设置的名称
+     列：
+     	 bkzfang              http://localhost:6800/
+
+6. 打包前执行scrapy list 这个命令执行成功说明可以打包了, 如果没执行成功说明还有工作没完成
+        如果是python无法找到scrapy项目, 需要再scrapy项目里的settings.py配置文件里设置成python可识别路径
+        将当前项目的一级目录TotalSpider目录添加到python可以识别目录中
+            BASE_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+            sys.path.insert(0, os.path.join(BASE_DIR, "bkzfang"))
+    如果错误提示, 什么远程计算机拒绝, 说明你的scrapy项目有链接远程计算机, 如链接数据库或者elasticsearch(搜索引擎)之类的, 需要先将链接服务器启动执行scrapy list 命令返回了爬虫名称说明一切ok了
+
+7. 执行打包命令
+       scrapyd-deploy 部署名称 -p 项目名称
+     列：
+      	Packing version 1554457227
+		Deploying to project "bkzfang" in http://localhost:6800/addversion.json
+		Server response (200):
+		{"node_name": "LAPTOP-F50CVVBS", "status": "ok", "project": "bkzfang", "version": "1554457227", "spiders": 1}
+
+8. 执行爬虫
+        curl http://localhost:6800/schedule.json -d project=项目名称 -d spider=爬虫名称
+       列：
+         {"node_name": "LAPTOP-F50CVVBS", "status": "ok", "jobid": "32e9ddae578711e98c6c34e12d578310"}
+
+9. 停止爬虫
+       curl http://localhost:6800/cancel.json -d project=scrapy项目名称 -d job=运行ID
+
+10. 删除scrapy项目
+ 		curl http://localhost:6800/delproject.json -d project=scrapy项目名称
+        注意： 需要先执行命令停止爬虫
+
+查看有多少个scrapy项目在api中
+        curl http://localhost:6800/listprojects.json
+
+查看指定的scrapy项目中有多少个爬虫
+         curl http://localhost:6800/listspiders.json?project=scrapy项目名称
+
+
+总结几个请求url
+
+1、获取状态
+
+	http://127.0.0.1:6800/daemonstatus.json
+
+2、获取项目列表
+
+	http://127.0.0.1:6800/listprojects.json
+
+3、获取项目下已发布的爬虫列表
+
+	http://127.0.0.1:6800/listspiders.json?project=myproject
+
+4、获取项目下已发布的爬虫版本列表
+
+	http://127.0.0.1:6800/listversions.json?project=myproject
+
+5、获取爬虫运行状态
+
+	http://127.0.0.1:6800/listjobs.json?project=myproject
+
+ 6、启动服务器上某一爬虫（必须是已发布到服务器的爬虫）
+
+	http://127.0.0.1:6800/schedule.json （post方式，data={"project":myproject,"spider":myspider}）
+
+7、删除某一版本爬虫
+
+	http://127.0.0.1:6800/delversion.json（post方式，data={"project":myproject,"version":myversion}）
+
+8、删除某一工程，包括该工程下的各版本爬虫
+
+	http://127.0.0.1:6800/delproject.json（post方式，data={"project":myproject}）
+
+
+
+# 滑动至浏览器下端
+Browner.execute_script("window.scrollTo(0, document.body.scrollHeight);")
