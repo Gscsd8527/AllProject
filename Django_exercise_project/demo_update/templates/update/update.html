@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/update/show/" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+    <input type="file" name="pic">
+    <input type="submit" name="上传">
+</form>
+</body>
+</html>

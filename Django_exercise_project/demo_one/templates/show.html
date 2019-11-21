@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>展示</title>
+</head>
+<body>
+<table border="1">
+    <tr>
+        <th>序号</th>
+        <th>古诗名</th>
+        <th>朝代</th>
+        <th>诗人</th>
+    </tr>
+        {% for i in order %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ i.1 }}</td>
+                <td>{{ i.2 }}</td>
+                <td>{{ i.3 }}</td>
+            </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="/myform/form/" method="POST">
+{#        //把传过来的对象obj进行渲染#}
+        <p>账号：{{ obj.user }}{{ obj.errors.user.0 }}</p>
+        <p>密码：{{ obj.pwd }}{{ obj.errors.pwd.0 }}</p>
+        <p>年龄：{{ obj.age }}{{ obj.errors.age.0 }}</p>
+        <p>e-mail：{{ obj.email }}{{ obj.errors.email.0 }}</p>
+        <input type="submit" value="提交" />
+    </form>
+
+</body>
