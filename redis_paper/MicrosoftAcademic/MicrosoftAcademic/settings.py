@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for MicrosoftAuthors project
+# Scrapy settings for MicrosoftAcademic project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,16 +9,25 @@
 #     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'MicrosoftAuthors'
+BOT_NAME = 'MicrosoftAcademic'
 
-SPIDER_MODULES = ['MicrosoftAuthors.spiders']
-NEWSPIDER_MODULE = 'MicrosoftAuthors.spiders'
+SPIDER_MODULES = ['MicrosoftAcademic.spiders']
+NEWSPIDER_MODULE = 'MicrosoftAcademic.spiders'
+
+# import datetime
+# to_day = datetime.datetime.now()
+# log_file_path = 'log_{}_{}_{}.log'.format(to_day.year, to_day.month, to_day.day)
+# # log_file_path = 'log/info.log'
+# LOG_LEVEL = 'INFO'
+# LOG_FILE = log_file_path
+
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'MicrosoftAuthors (+http://www.yourdomain.com)'
+#USER_AGENT = 'MicrosoftAcademic (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
+# ROBOTSTXT_OBEY = True
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
@@ -27,7 +36,7 @@ CONCURRENT_REQUESTS = 16
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 2.5
+DOWNLOAD_DELAY = 0
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -47,14 +56,15 @@ COOKIES_ENABLED = False
 # Enable or disable spider middlewares
 # See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'MicrosoftAuthors.middlewares.MicrosoftauthorsSpiderMiddleware': 543,
+#    'MicrosoftAcademic.middlewares.MicrosoftacademicSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   # 'MicrosoftAuthors.middlewares.MicrosoftauthorsDownloaderMiddleware': 543,
-   'MicrosoftAuthors.middlewares.UserAgentMiddleware': 400,
+   # 'MicrosoftAcademic.middlewares.MicrosoftacademicDownloaderMiddleware': 543,
+   'MicrosoftAcademic.middlewares.UserAgentMiddleware': 300,
+   # 'MicrosoftAcademic.middlewares.ProxyMiddleware': 290,
 }
 
 # Enable or disable extensions
@@ -66,7 +76,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'MicrosoftAuthors.pipelines.MicrosoftauthorsPipeline': 300,
+   'MicrosoftAcademic.pipelines.MicrosoftacademicPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -89,6 +99,7 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
 
 
 MY_USER_AGENT = [
@@ -129,5 +140,25 @@ MY_USER_AGENT = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
 ]
 
+PROXIES = [
+    '42.51.96.21:21591',
+]
+
+COMMANDS_MODULE = "MicrosoftAcademic.commands"
 
 
+
+# ---------------scrapy-redis 的配置
+# 是否在开始之前清空 调度器和去重记录，True=清空，False=不清空
+SCHEDULER_FLUSH_ON_START = True
+#使用scrapy-redis中的调度器，来保证每一台主机爬取的url地址都是不一样的，Scheduler
+SCHEDULER = 'scrapy_redis.scheduler.Scheduler'
+#是否在关闭时候保留原来的调度器和去重记录，True=保留，False=清空
+SCHEDULER_PERSIST = True
+#配置scrapy使用的去重类，RFPDupeFilter
+DUPEFILTER_CLASS='scrapy_redis.dupefilter.RFPDupeFilter'
+#配置当前项目链接的redis地址
+# REDIS_URL = 'redis://localhost:@127.0.0.1:6379/1'
+REDIS_URL = 'redis://39.107.45.99:6379/6'
+#最大空闲时间防止分布式爬虫因为等待而关闭
+SCHEDULER_IDLE_BEFORE_CLOSE = 10

@@ -1,0 +1,57 @@
+nohup: ignoring input
+2020-04-14 11:35:14 [scrapy.utils.log] INFO: Scrapy 2.0.1 started (bot: MicrosoftAcademic)
+2020-04-14 11:35:14 [scrapy.utils.log] INFO: Versions: lxml 4.5.0.0, libxml2 2.9.10, cssselect 1.1.0, parsel 1.5.2, w3lib 1.21.0, Twisted 20.3.0, Python 3.6.5 (default, Apr  9 2020, 11:02:14) - [GCC 4.8.5 20150623 (Red Hat 4.8.5-11)], pyOpenSSL 19.1.0 (OpenSSL 1.1.1f  31 Mar 2020), cryptography 2.9, Platform Linux-3.10.0-514.26.2.el7.x86_64-x86_64-with-centos-7.2.1511-Core
+2020-04-14 11:35:14 [scrapy.utils.log] DEBUG: Using reactor: twisted.internet.epollreactor.EPollReactor
+2020-04-14 11:35:14 [scrapy.crawler] INFO: Overridden settings:
+{'BOT_NAME': 'MicrosoftAcademic',
+ 'COMMANDS_MODULE': 'MicrosoftAcademic.commands',
+ 'COOKIES_ENABLED': False,
+ 'NEWSPIDER_MODULE': 'MicrosoftAcademic.spiders',
+ 'SPIDER_MODULES': ['MicrosoftAcademic.spiders']}
+2020-04-14 11:35:14 [scrapy.extensions.telnet] INFO: Telnet Password: 71387424982a8d68
+2020-04-14 11:35:14 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.memusage.MemoryUsage',
+ 'scrapy.extensions.logstats.LogStats']
+2020-04-14 11:35:14 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'MicrosoftAcademic.middlewares.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+2020-04-14 11:35:14 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2020-04-14 11:35:14 [scrapy.middleware] INFO: Enabled item pipelines:
+['MicrosoftAcademic.pipelines.MicrosoftacademicPipeline']
+2020-04-14 11:35:14 [scrapy.core.engine] INFO: Spider opened
+2020-04-14 11:35:14 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2020-04-14 11:35:14 [py.warnings] WARNING: /usr/local/python3/lib/python3.6/site-packages/scrapy/spidermiddlewares/offsite.py:61: URLWarning: allowed_domains accepts only domains, not URLs. Ignoring URL entry https://academic.microsoft.com in allowed_domains.
+  warnings.warn(message, URLWarning)
+
+2020-04-14 11:35:14 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6023
+j1= 90955
+j2= 84652
+countSet=  6303
+===================RELATED=========================== 6303
+2020-04-14 11:35:15 [scrapy.core.engine] INFO: Closing spider (finished)
+2020-04-14 11:35:15 [scrapy.statscollectors] INFO: Dumping Scrapy stats:
+{'elapsed_time_seconds': 1.409551,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2020, 4, 14, 3, 35, 15, 785930),
+ 'log_count/INFO': 10,
+ 'log_count/WARNING': 1,
+ 'memusage/max': 47255552,
+ 'memusage/startup': 47255552,
+ 'start_time': datetime.datetime(2020, 4, 14, 3, 35, 14, 376379)}
+2020-04-14 11:35:15 [scrapy.core.engine] INFO: Spider closed (finished)

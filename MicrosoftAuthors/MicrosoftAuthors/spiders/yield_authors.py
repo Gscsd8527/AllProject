@@ -28,7 +28,8 @@ class AuthorsSpider(scrapy.Spider):
             text = response.text
             data_json = json.loads(text)
             data_list = data_json['ct']
-            for data in data_list[:1]:
+            print('data_list= ',data_list)
+            for data in data_list[3:4]:
                 init_name = data['n']
                 init_id = data['id']
                 print('init_name= ', init_name)
