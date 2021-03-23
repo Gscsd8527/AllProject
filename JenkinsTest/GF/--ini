@@ -1,0 +1,104 @@
+*** Starting uWSGI 2.0.19.1 (64bit) on [Thu Mar 18 04:21:26 2021] ***
+compiled with version: 4.8.5 20150623 (Red Hat 4.8.5-44) on 18 March 2021 04:18:10
+os: Linux-3.10.0-1160.15.2.el7.x86_64 #1 SMP Wed Feb 3 15:06:38 UTC 2021
+nodename: dc6c128a350c
+machine: x86_64
+clock source: unix
+detected number of CPU cores: 1
+current working directory: /opt/GF
+detected binary path: /usr/local/bin/uwsgi
+!!! no internal routing support, rebuild with pcre support !!!
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+chdir() to /opt/GF
+your processes number limit is 1048576
+your memory page size is 4096 bytes
+detected max file descriptor number: 1048576
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uWSGI http bound on :8000 fd 4
+uwsgi socket 0 bound to TCP address 127.0.0.1:37709 (port auto-assigned) fd 3
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+Python version: 3.6.8 (default, Nov 16 2020, 16:55:22)  [GCC 4.8.5 20150623 (Red Hat 4.8.5-44)]
+*** Python threads support is disabled. You can enable it with --enable-threads ***
+Python main interpreter initialized at 0x1c8c450
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 364520 bytes (355 KB) for 4 cores
+*** Operational MODE: preforking ***
+WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x1c8c450 pid: 552 (default app)
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 552)
+spawned uWSGI worker 1 (pid: 554, cores: 1)
+spawned uWSGI worker 2 (pid: 555, cores: 1)
+spawned uWSGI worker 3 (pid: 556, cores: 1)
+spawned uWSGI worker 4 (pid: 557, cores: 1)
+spawned uWSGI http 1 (pid: 558)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 557|app: 0|req: 1/1] 159.226.193.157 () {38 vars in 720 bytes} [Thu Mar 18 04:21:30 2021] GET /query1/1 => generated 275 bytes in 8 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 557|app: 0|req: 2/2] 159.226.193.157 () {38 vars in 720 bytes} [Thu Mar 18 04:22:05 2021] GET /query1/1 => generated 275 bytes in 1 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 555|app: 0|req: 1/3] 159.226.193.157 () {38 vars in 718 bytes} [Thu Mar 18 04:22:07 2021] GET /query1/1 => generated 275 bytes in 8 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 557|app: 0|req: 3/4] 159.226.193.157 () {38 vars in 719 bytes} [Thu Mar 18 04:22:20 2021] GET /query1/1 => generated 275 bytes in 0 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 554|app: 0|req: 1/5] 159.226.193.157 () {38 vars in 720 bytes} [Thu Mar 18 04:22:20 2021] GET /query1/1 => generated 275 bytes in 8 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 557|app: 0|req: 4/6] 159.226.193.157 () {38 vars in 720 bytes} [Thu Mar 18 04:22:34 2021] GET /query1/1 => generated 275 bytes in 1 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 556|app: 0|req: 1/7] 159.226.193.157 () {38 vars in 720 bytes} [Thu Mar 18 04:22:35 2021] GET /query1/1 => generated 275 bytes in 8 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 557|app: 0|req: 5/8] 159.226.193.157 () {38 vars in 720 bytes} [Thu Mar 18 04:22:36 2021] GET /query1/1 => generated 275 bytes in 1 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.19.1 (64bit) on [Sat Mar 20 06:48:55 2021] ***
+compiled with version: 4.8.5 20150623 (Red Hat 4.8.5-44) on 18 March 2021 04:18:10
+os: Linux-3.10.0-1160.15.2.el7.x86_64 #1 SMP Wed Feb 3 15:06:38 UTC 2021
+nodename: dc6c128a350c
+machine: x86_64
+clock source: unix
+detected number of CPU cores: 1
+current working directory: /opt/GF
+detected binary path: /usr/local/bin/uwsgi
+!!! no internal routing support, rebuild with pcre support !!!
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+chdir() to /opt/GF
+your processes number limit is 1048576
+your memory page size is 4096 bytes
+detected max file descriptor number: 1048576
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uWSGI http bound on :8000 fd 4
+uwsgi socket 0 bound to TCP address 127.0.0.1:40376 (port auto-assigned) fd 3
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+Python version: 3.6.8 (default, Nov 16 2020, 16:55:22)  [GCC 4.8.5 20150623 (Red Hat 4.8.5-44)]
+*** Python threads support is disabled. You can enable it with --enable-threads ***
+Python main interpreter initialized at 0x7e1450
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 364520 bytes (355 KB) for 4 cores
+*** Operational MODE: preforking ***
+WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x7e1450 pid: 39 (default app)
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 39)
+spawned uWSGI worker 1 (pid: 41, cores: 1)
+spawned uWSGI worker 2 (pid: 42, cores: 1)
+spawned uWSGI worker 3 (pid: 43, cores: 1)
+spawned uWSGI worker 4 (pid: 44, cores: 1)
+spawned uWSGI http 1 (pid: 45)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 41|app: 0|req: 1/1] 124.126.138.180 () {38 vars in 725 bytes} [Sat Mar 20 06:48:59 2021] GET /query1/1 => generated 275 bytes in 8 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 44|app: 0|req: 1/2] 124.126.138.180 () {38 vars in 725 bytes} [Sat Mar 20 06:49:06 2021] GET /query1/1 => generated 275 bytes in 8 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
+{'code': '200', 'data': [{'id': 'sou_suo_id_1', 'name': 'sou_suo_name_1'}, {'id': 'sou_suo_id_2', 'name': 'sou_suo_name_2'}, {'id': 'sou_suo_id_3', 'name': 'sou_suo_name_3'}, {'id': 'sou_suo_id_4', 'name': 'sou_suo_name_4'}, {'id': 'sou_suo_id_5', 'name': 'sou_suo_name_5'}]}
+[pid: 43|app: 0|req: 1/3] 124.126.138.180 () {38 vars in 725 bytes} [Sat Mar 20 06:49:06 2021] GET /query1/1 => generated 275 bytes in 8 msecs (HTTP/1.1 200) 5 headers in 158 bytes (1 switches on core 0)
