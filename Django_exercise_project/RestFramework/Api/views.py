@@ -20,6 +20,8 @@ import datetime
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth import authenticate
 from Api.utils.jwt_auth import create_token
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -237,6 +239,7 @@ class AuthView(APIView):
             ret['msg'] = '请求异常'
         return Response(ret)
 
+
 ORDER_DICT = {
     1:{
         'name':'apple',
@@ -248,10 +251,11 @@ ORDER_DICT = {
     }
 }
 
+
 # http://127.0.0.1:8000/order/?token=c14f6fff73ec5220a68cce464004bee8
 class OrderView(APIView):
     # 用户想要获取订单，就要先通过身份认证、在全局settings.py 中已经配置
-    permission_classes = [SVIPPremission, ]
+    # permission_classes = [SVIPPremission, ]
 
     def get(self, request, format=None):
         try:
@@ -270,7 +274,7 @@ class OrderView(APIView):
 
 
 class UserInfoView(APIView):
-    permission_classes = [SVIPPremission, ]
+    # permission_classes = [SVIPPremission, ]
     def get(self, request, *args, **kwargs):
         return HttpResponse('SVIP用户信息')
 
@@ -307,3 +311,27 @@ class JwtCheckTokenView(APIView):
             }
         return Response(resp)
 
+
+# 过滤
+# http://127.0.0.1:8000/dataset/
+# 分别通过title 和 date 去查询
+# http://127.0.0.1:8000/dataset/?title=英研制神奇胶囊自行车：时速可达145公里
+# http://127.0.0.1:8000/dataset/?date=2014-05-23
+class FilterView(ModelViewSet):
+    queryset = DataSets.objects.all()
+
+    # 过滤器 和 过滤字段
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('title', 'date')
+
+
+# 排序
+# 分别通过date和id 排序
+# http://127.0.0.1:8000/ordering/?ordering=-date
+# http://127.0.0.1:8000/ordering/?ordering=id
+class OrderingView(ModelViewSet):
+    queryset = DataSets.objects.all()
+
+    # 排序器 和 排序字段
+    filter_backends = (DjangoFilterBackend, OrderingFilter,)
+    filter_fields = ('title', 'id', 'date')

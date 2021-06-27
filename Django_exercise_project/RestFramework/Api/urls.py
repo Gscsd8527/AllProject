@@ -30,5 +30,10 @@ urlpatterns = [
 
     path('jwt/', views.JwtTokenView.as_view()),
     path('testjwt/', views.JwtCheckTokenView.as_view()),
+
+    path('dataset/', views.FilterView.as_view({'get': 'list'})),
+    path('ordering/', views.OrderingView.as_view({'get': 'list'})),
+
+
 ]
 urlpatterns+=routed.urls

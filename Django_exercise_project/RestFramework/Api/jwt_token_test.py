@@ -69,6 +69,7 @@ def main():
     data = get_payload(token)
     print(data)
 
+
 if __name__ == '__main__':
     main()
 

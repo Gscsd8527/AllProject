@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'Api',
+    'django_filters',  # 用于过滤
+    'rest_framework_swagger'  # Django 接入 Java的knife4j接口文档
 ]
 
 MIDDLEWARE = [
@@ -160,6 +162,9 @@ REST_FRAMEWORK = {
     "UNAUTHENTICATED_USER": None,  # 匿名，request.user = None
     "UNAUTHENTICATED_TOKEN": None, # 匿名，request.auth = None
     # "DEFAULT_PERMISSION_CLASSES": ['Api.permission.MyPremission'],  # 表示每一个视图类（只要不重写permission_classes属性），都需要SVIP的用户才能访问。
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',  # 自动生成文档需要这个
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)  # 视图中使用过滤需要这个
+
 }
 
 import datetime
