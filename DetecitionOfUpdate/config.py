@@ -8,7 +8,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 HOST = "smtp.163.com"  # 设置发件服务器地址
-# mail_user = "tan_gscsd@163.com"  # 用户名
-# mail_pass = "gscsd123456"  # 口令
-SENDER = 'tan_gscsd@163.com'  # 设置发件邮箱，一定要自己注册的邮箱
-PWD = 'gscsd123456'  # 设置发件邮箱的授权码密码，根据163邮箱提示，登录第三方邮件客户端需要授权码
+# mail_user = "******"  # 用户名
+# mail_pass = "******"  # 口令
+SENDER = '******'  # 设置发件邮箱，一定要自己注册的邮箱
+PWD = '******'  # 设置发件邮箱的授权码密码，根据163邮箱提示，登录第三方邮件客户端需要授权码
