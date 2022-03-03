@@ -54,7 +54,7 @@ def jwt_authentication():
 
 @app.route("/")
 def index():
-    return "hello"
+    return "hello world !"
 
 
 if __name__ == '__main__':
