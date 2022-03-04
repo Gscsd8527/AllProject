@@ -59,13 +59,22 @@ def register():
             return jsonify(resp_error_status(msg="信息漏填"))
 
 
-@user_app.route('/views/', methods=['GET'])
+@user_app.route('/login_views/', methods=['GET'])
 @login_required
-def views():
+def login_views():
     """
     登录的用户来查看消息
     :return:
     """
     username = g.username
     print('username', username)
-    return "Views"
+    return jsonify(resp_success_status(msg="success", data="登录的用户才能访问"))
+
+
+@user_app.route('/views/', methods=['GET'])
+def views():
+    """
+    不用登录的用户来查看消息
+    :return:
+    """
+    return jsonify(resp_success_status(msg="success", data="不用登录的用户来查看消息"))

@@ -18,6 +18,7 @@ app.config.from_pyfile('setting.py')
 db.app = app
 db.init_app(app)
 
+
 # db.create_all()
 
 @app.before_request
@@ -32,6 +33,17 @@ def jwt_authentication():
        如果是字典类型的话 就得把字典格式序列化一下
     """
     token = request.headers.get('Authorization')
+
+    allow_path = [
+        '/user/login/',
+        '/user/register/',
+        '/user/views/',
+    ]
+    # 放行的路径
+    curr_path = request.path
+    if curr_path in allow_path:
+        return
+
     try:
         payload = jwt.decode(token, SALT, algorithms=['HS256'])
         g.username = payload.get("username")
@@ -54,7 +66,7 @@ def jwt_authentication():
 
 @app.route("/")
 def index():
-    return "hello world !"
+    return "hello"
 
 
 if __name__ == '__main__':
